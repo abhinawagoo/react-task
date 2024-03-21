@@ -1,0 +1,41 @@
+.resizable-layout {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.row {
+    display: flex;
+}
+
+.component {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #890a0a;
+    margin: 5px;
+    overflow: hidden;
+    position: relative;
+
+    /* background-color: red; */
+    /* For resizable handle positioning */
+}
+
+.react-resizable {
+    position: relative;
+}
+
+.react-resizable-handle {
+    position: absolute;
+    width: 10px;
+    height: 100%;
+    cursor: col-resize;
+    top: 0;
+    right: -5px;
+    /* Adjust to fit handle properly */
+    z-index: 1;
+}
+
+.react-resizable-handle:hover {
+    background-color: lightgray;
+}
