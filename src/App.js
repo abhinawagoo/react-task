@@ -6,9 +6,6 @@ import InputAndButtons from "./component/InputAndButtons";
 import CounterDisplay from "./component/CounterDisplay";
 
 const App = () => {
-  const [component1Width, setComponent1Width] = useState(200);
-  const [component2Width, setComponent2Width] = useState(200);
-  const [component3Height, setComponent3Height] = useState(300);
   const [taskList, setTaskList] = useState([]);
   const [inputValue, setInputValue] = useState("");
   const [updateCount, setUpdateCount] = useState(0);
@@ -19,15 +16,19 @@ const App = () => {
     // Simulating data fetching with setTimeout for demonstration purposes
     const fetchCountsFromDatabase = async () => {
       try {
-        // https://node-task-backend-rho.vercel.app/api/get-all-tasks
-        // Example API endpoint to fetch counts
         const response = await fetch(
           "https://node-task-backend-rho.vercel.app/api/count"
         );
         const data = await response.json();
-        console.log(data, response);
         setUpdateCount(data.updateCount);
         setAddCount(data.addCount);
+
+        // Fetch all tasks
+        const responseTasks = await fetch(
+          "https://node-task-backend-rho.vercel.app/api/get-all-tasks"
+        );
+        const tasksData = await responseTasks.json();
+        setTaskList(tasksData);
       } catch (error) {
         console.error("Error fetching counts:", error);
       }
@@ -38,7 +39,6 @@ const App = () => {
 
   const handleAddTask = () => {
     if (inputValue.trim() !== "") {
-      // Make a POST request to the backend API
       fetch("https://node-task-backend-rho.vercel.app/api/add", {
         method: "POST",
         headers: {
@@ -50,17 +50,13 @@ const App = () => {
       })
         .then((response) => {
           if (response.ok) {
-            // If the request was successful, update the task list and clear the input value
-            setTaskList([...taskList, inputValue]);
+            setTaskList((prevTaskList) => [...prevTaskList, inputValue]);
             setInputValue("");
-            // Here you would typically handle any response from the server
           } else {
-            // If the request failed, handle the error
             throw new Error("Failed to add task");
           }
         })
         .catch((error) => {
-          // Handle any errors that occurred during the fetch
           console.error("Error adding task:", error);
         });
     }
@@ -68,24 +64,47 @@ const App = () => {
 
   const handleUpdateCount = () => {
     setUpdateCount(updateCount + 1);
-    // Here you would typically update the update count in the database as well
   };
 
+  const [component1Width, setComponent1Width] = useState(
+    window.innerWidth * 0.5
+  );
+  const [component1Height, setComponent1Height] = useState(
+    window.innerHeight * 0.5
+  );
+  const [component2Width, setComponent2Width] = useState(
+    window.innerWidth * 0.5
+  );
+  const [component2Height, setComponent2Height] = useState(
+    window.innerHeight * 0.5
+  );
+  const [component3Width, setComponent3Width] = useState(
+    window.innerWidth * 0.99
+  );
+  const [component3Height, setComponent3Height] = useState(
+    window.innerHeight * 0.5
+  );
+
   const onResizeComponent1 = (event, { size }) => {
-    console.log(size, "size");
-    setComponent1Width(size.width);
+    const { width, height } = size;
+    setComponent1Width(width);
+    setComponent1Height(height);
   };
 
   const onResizeComponent2 = (event, { size }) => {
-    console.log(size, "size");
-
-    setComponent2Width(size.width);
+    const { width, height } = size;
+    setComponent2Width(width);
+    setComponent2Height(height);
   };
 
   const onResizeComponent3 = (event, { size }) => {
-    console.log(size, "size");
+    const { width, height } = size;
+    console.log(size);
+    setComponent2Height(window.innerHeight - height);
+    setComponent1Height(window.innerHeight - height);
 
-    setComponent3Height(size.height);
+    setComponent3Width(width);
+    setComponent3Height(height);
   };
 
   return (
@@ -93,17 +112,19 @@ const App = () => {
       <div className="row">
         <ResizableBox
           width={component1Width}
-          height={component3Height}
+          height={component1Height}
           onResize={onResizeComponent1}
           className="component"
+          resizeHandles={["s", "w", "e", "n", "sw", "nw", "se", "ne"]} // Allow resizing from bottom, right, and bottom-right corner
         >
           <TaskList taskList={taskList} />
         </ResizableBox>
         <ResizableBox
           width={component2Width}
-          height={component3Height}
+          height={component2Height}
           onResize={onResizeComponent2}
           className="component"
+          resizeHandles={["s", "w", "e", "n", "sw", "nw", "se", "ne"]} // Allow resizing from bottom, right, and bottom-right corner
         >
           <InputAndButtons
             inputValue={inputValue}
@@ -114,9 +135,11 @@ const App = () => {
         </ResizableBox>
       </div>
       <ResizableBox
+        width={component3Width}
         height={component3Height}
         onResize={onResizeComponent3}
-        className="component"
+        className="component" // No inline width style to occupy full width initially
+        resizeHandles={["s", "w", "e", "n", "sw", "nw", "se", "ne"]} // Allow resizing from all sides
       >
         <CounterDisplay updateCount={updateCount} addCount={addCount} />
       </ResizableBox>
