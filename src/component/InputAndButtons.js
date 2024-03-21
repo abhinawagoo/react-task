@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 
 import "../styles/ResizableLayout.css";
 
@@ -6,8 +6,16 @@ const InputAndButtons = ({
   inputValue,
   setInputValue,
   handleAddTask,
-  handleUpdateCount,
+  handleUpdateTask,
+  selectedTask,
 }) => {
+  useEffect(() => {
+    if (selectedTask) {
+      setInputValue(selectedTask.data);
+    } else {
+      setInputValue(""); // Clear input field when no task is selected
+    }
+  }, [selectedTask, setInputValue]);
   return (
     <div className="input-container">
       <input
@@ -21,7 +29,7 @@ const InputAndButtons = ({
         <button className="custom-button" onClick={handleAddTask}>
           Add
         </button>
-        <button className="custom-button" onClick={handleUpdateCount}>
+        <button className="custom-button" onClick={handleUpdateTask}>
           Update
         </button>
       </div>
