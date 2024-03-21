@@ -9,7 +9,7 @@ const TaskList = ({ taskList, setSelectedTask, selectedTask }) => {
   return (
     <div className="task-list-container">
       <div className="task-list">
-        {taskList.map((task, index) => (
+        {taskList?.map((task, index) => (
           <div
             key={task._id}
             className={`task-item ${
